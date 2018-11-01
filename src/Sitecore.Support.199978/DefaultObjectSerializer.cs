@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using Newtonsoft.Json;
 using Sitecore.Framework.Conditions;
+using Sitecore.XConnect.Client.Serialization;
+using Sitecore.XConnect.Collection.Model;
+using Sitecore.Xdb.MarketingAutomation.Core.Serialization;
 using Sitecore.Xdb.MarketingAutomation.SqlServer.Serialization;
 
 namespace Sitecore.Support.Xdb.MarketingAutomation.SqlServer.Serialization
@@ -16,7 +20,12 @@ namespace Sitecore.Support.Xdb.MarketingAutomation.SqlServer.Serialization
       new JsonSerializerSettings
       {
         TypeNameHandling = TypeNameHandling.All,
-        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+        TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
+        ContractResolver = new XdbJsonContractResolver(CollectionModel.Model, true, true),
+        Converters = new List<JsonConverter>
+        {
+          new LiveEventDataJsonConverter(CollectionModel.Model)
+        }
       };
 
     public T Deserialize<T>(byte[] data) where T : class
